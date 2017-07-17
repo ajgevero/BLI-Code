@@ -1,0 +1,35 @@
+#include <Servo.h>
+int servoPin = 9; // I/O Pin Number
+Servo servo;
+int angle;
+int straightTime = 2000;
+int center = 80;
+int minAngle = 20;
+int maxAngle = 115; 
+int circleTime = 8000;
+
+void setup() {
+  // put your setup code here, to run once:
+  servo.attach(servoPin);
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  if (angle != center){
+    angle = center;
+    servo.write(angle);
+    delay(20);
+  }
+  delay(straightTime);
+  for (angle = center; angle >= minAngle; angle -= 5) {
+    servo.write(angle);
+    delay(20);
+  }
+  delay(circleTime);
+  delay(circleTime/2);
+  for (angle = minAngle; angle <= center; angle += 5) {
+    servo.write(angle);
+    delay(20);
+  }
+  delay(straightTime);
+}
