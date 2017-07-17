@@ -1,0 +1,105 @@
+#include <Servo.h>
+int servoPin = 13; // I/O Pin Number
+Servo servo;
+int angle;
+int turnTime = 4000;
+int straightTime = 2000;
+int center = 80;
+int minAngle = 20;
+int maxAngle = 115; 
+int fullCircleTime = turnTime * 2 - 500;
+
+int enA = 10;   //Motor 1
+int in1 = 9;
+int in2 = 8;
+int enB = 5;    //Motor 2
+int in3 = 7;
+int in4 = 6;
+
+void setup() {
+  // put your setup code here, to run once:
+  servo.attach(servoPin);
+  pinMode(enA, OUTPUT);
+  pinMode(enB, OUTPUT);
+  pinMode(in1, OUTPUT);   // Swithces all I/O pins into Output mode
+  pinMode(in2, OUTPUT);
+  pinMode(in3, OUTPUT);
+  pinMode(in4, OUTPUT); 
+
+  delay(1000);
+
+  rampUp();
+  figureEight();
+  rampDown();
+}
+
+void moveToCenter(){
+   if (angle != center) {
+    angle = center;         //Straighten Out
+    servo.write(angle);   
+    delay(20);
+  }
+  delay(straightTime);      //Go Straight
+}
+
+void figureEight() {
+  if (angle == center){
+    for (angle = center; angle <= maxAngle; angle += 5) {     //Rudder turns left
+      servo.write(angle);
+      delay(20);
+    }
+  }
+  else {
+    servo.write(maxAngle);
+    delay(30);
+  }
+  delay(turnTime);  
+  
+  for (angle = maxAngle; angle >= minAngle; angle -= 10) {   //Rudder turns completely right
+    servo.write(angle);
+    delay(20);
+  }
+  delay(fullCircleTime);  // Complete Revolution
+
+  for (angle = minAngle; angle <= maxAngle; angle += 10){
+    servo.write(angle);
+    delay(20);
+  }
+  delay(fullCircleTime);    //Complete turn Left
+
+  for (angle = maxAngle; angle >= center; angle -= 5){
+    servo.write(angle);
+    delay(20);
+  }
+  delay(straightTime);
+}
+
+void rampUp(){
+  int spd1;
+  for (spd1 = 80; spd1 <= 255; spd1 += 5){
+    digitalWrite(in1, LOW);      // Turn Motor 1 On
+    digitalWrite(in2, HIGH);    // Speeds: 0 - 255
+    analogWrite(enA, spd1);
+
+    digitalWrite(in3, LOW);      // Turn Motor 2 On
+    digitalWrite(in4, HIGH);
+    analogWrite(enB, spd1);
+
+    delay(20);
+  }
+}
+
+void rampDown(){
+  int spd;
+  for (spd = 255; spd != 0; spd -= 5){
+     digitalWrite(in1, LOW);      // Turn Motor 2 On
+     digitalWrite(in2, HIGH);
+     analogWrite(enB, spd);
+
+     digitalWrite(in3, LOW);      // Turn Motor 2 On
+     digitalWrite(in4, HIGH);
+     analogWrite(enB, spd);
+     delay(20);
+  }
+}
+  
